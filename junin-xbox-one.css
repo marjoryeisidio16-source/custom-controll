@@ -1,0 +1,272 @@
+/* ========================================
+   JUNIN — XBOX ONE GAMEPAD VIEWER SKIN
+   ========================================
+   ARQUIVO ÚNICO: sem HTML, JS, imports ou fontes externas.
+
+   STATUS (04/10/2026): seletores conferidos no CLÁSSICO e no overlay BETA
+   fornecido: https://app.gpv.gg/g/K8SkYBO30Q, que redireciona para
+   https://overlay.gamepadviewer.com/gamepad/K8SkYBO30Q e inclui iframe de
+   https://overlay.gamepadviewer.com/loader/index.html . Esse iframe usa
+   o template clássico. Compatibilidade estrutural confirmada para esse
+   tipo de overlay; não se generaliza para outros templates do beta.
+   https://gamepadviewer.com/  (template dentro de #gamepads)
+   https://gamepadviewer.com/style.css
+   https://gamepadviewer.com/main.js
+   https://gamepadviewer.com/tester.js
+   https://gamepadviewer.com/gamepad.js
+
+   Scripts oficiais do overlay também conferidos:
+   https://overlay.gamepadviewer.com/loader/main.js
+   https://overlay.gamepadviewer.com/loader/tester.js
+   https://overlay.gamepadviewer.com/loader/gamepad.js
+   O gerador exige login, mas o link de visualização permitiu inspecionar
+   o DOM real. main.js troca a classe por custom e importa o parâmetro css.
+
+   VALIDAÇÃO: CSS carregado no loader oficial via parâmetro css com data URI
+   temporário, sem servidor/HTML/JS próprio. Todos os inputs têm dimensões
+   calculadas; canvas 750×630; estado disconnected aplicado; transformação
+   nativa do container preservada. Esse teste não altera o controle salvo
+   e não equivale a hospedagem pública ou teste de inputs físicos.
+
+   BASE: assets/img/junin-shell-base.png — casca PNG com transparência,
+   logotipo/raios preservados e sem controles desenhados. Esta imagem foi
+   criada a partir do conceito aprovado. Medida: 1358 × 1158 pixels.
+   Escala CSS proporcional: 750 × 639.47 px. Percentuais usam o canvas da
+   casca; controles ficam em elementos HTML reais sobre o background.
+   junin-skin-conceito-v1.png é apenas o conceito aprovado, não a base CSS.
+
+   Os SVGs data: de letras e Xbox estão incorporados neste arquivo.
+   Somente a PNG original e este CSS precisam de hospedagem HTTPS pública.
+   Sirva CSS com Content-Type: text/css e PNG com image/png.
+   Não há URL fictícia ativa ou dependência do projeto anterior.
+
+   No clássico, css= troca a classe da skin por custom e importa a folha.
+   p=1 escolhe Player 1; sc= escala o conjunto; smeter=1 ativa medidores.
+   Use Custom CSS URL no gerador que exponha esse campo; forneça a URL
+   direta do arquivo, não um link de visualização de repositório.
+
+   CSS testado no loader oficial do overlay fornecido. A base local deve ser
+   publicada junto ao CSS para URL relativa assets/img/junin-shell-base.png.
+   Testes com controle físico, hospedagem HTTPS e OBS ainda pendentes.
+   Não alterar transform, margin-left ou margin-top dos sticks: são nativos.
+*/
+
+/* Controller */
+.controller.custom {
+  --junin-width: 750px;
+  --junin-height: 639.47px;
+  --junin-base: url("assets/img/junin-shell-base.png");
+  --junin-blue: #008cff;
+  --junin-cyan: #69e7ff;
+  --junin-dark: #080e18;
+  --junin-edge: #186ba0;
+  --junin-surface: radial-gradient(ellipse at 40% 28%, #293746, #101823 58%, #03070c);
+  width: var(--junin-width);
+  height: var(--junin-height);
+  background-image: var(--junin-base);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: var(--junin-cyan);
+  /* Position, display, transform e escala do container pertencem ao viewer. */
+}
+
+.custom :is(.triggers, .bumpers, .arrows, .abxy, .sticks, .dpad) {
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.custom :is(.trigger, .bumper, .back, .start, .button, .stick, .face, .meta) {
+  position: absolute;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+.custom :is(.touchpad, .wheels, .fstick, .trigger-button, .clear) { display: none; }
+
+/* Disconnected
+   O clássico mostra .plshalpme sobre a skin desconectada. Ocultamos a mensagem
+   e mantemos a composição escurecida. Não aplicamos display:none nos grupos. */
+.controller.custom.disconnected { filter: grayscale(1) brightness(.4); }
+.controller.custom .plshalpme { display: none; }
+
+/* Triggers
+   tester.updateTrigger controla opacity (0..1) ou clip-path em smeter=1.
+   As cavidades ::before/::after ficam visíveis em repouso; a camada nativa
+   luminosa cresce em opacidade/área. Não há opacity !important nem JS próprio. */
+.custom .triggers { left: 21.8667%; top: 3.754%; width: 56.2667%; height: 18.14%; }
+.custom .triggers::before,
+.custom .triggers::after,
+.custom .trigger {
+  top: 0;
+  width: 22.274%;
+  height: 100%;
+  border: 2px solid var(--junin-edge);
+  border-radius: 35% 35% 12% 12%;
+  background: var(--junin-surface);
+}
+.custom .triggers::before,
+.custom .triggers::after {
+  position: absolute;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  font: 600 18px/1 Arial, sans-serif;
+  color: #86b5d0;
+  box-shadow: 0 0 3px #008cff55;
+}
+.custom .triggers::before { content: 'LT'; left: 0; }
+.custom .triggers::after { content: 'RT'; right: 0; }
+.custom .trigger {
+  opacity: 0;
+  z-index: 1;
+  border-color: var(--junin-cyan);
+  background: linear-gradient(0deg, #007eff, #033355 65%, #102334);
+  box-shadow: inset 0 0 9px #20baff;
+  filter: drop-shadow(0 0 5px var(--junin-blue));
+}
+.custom .trigger.left { left: 0; }
+.custom .trigger.right { right: 0; }
+.custom .trigger::before { position: absolute; inset: 0; display: grid; place-items: center; font: 600 18px/1 Arial, sans-serif; }
+.custom .trigger.left::before { content: 'LT'; }
+.custom .trigger.right::before { content: 'RT'; }
+
+/* Bumpers */
+.custom .bumpers { left: 18.5333%; top: 22.05%; width: 64.8%; height: 9.539%; }
+.custom .bumper {
+  top: 0; width: 28.395%; height: 100%;
+  border: 2px solid var(--junin-edge);
+  border-radius: 35% 35% 22% 22%;
+  background: var(--junin-surface);
+  box-shadow: inset 0 2px 3px #7aafcf44, 0 0 4px #008cff66;
+}
+.custom .bumper.left { left: 0; }
+.custom .bumper.right { right: 0; }
+.custom .bumper::before { position: absolute; inset: 0; display: grid; place-items: center; font: 600 19px/1 Arial, sans-serif; }
+.custom .bumper.left::before { content: 'LB'; }
+.custom .bumper.right::before { content: 'RB'; }
+
+/* Xbox / Player Indicator
+   .meta[data-name="button-meta"] recebe botão padrão 16 no clássico.
+   Se driver/navegador/SO não expuser Xbox, o ícone permanece apenas visual.
+   .quadrant.p0..p3 corresponde ao índice do gamepad, NÃO ao botão Xbox.
+   Indicador representado por quatro pontos; só o ponto do jogador acende. */
+.custom .meta {
+  left: 46.6667%; top: 31.432%; width: 7.2%; height: 8.444%;
+  border-radius: 50%;
+  border: 2px solid var(--junin-blue);
+  background-color: var(--junin-dark);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%2398eaff'/%3E%3Cpath d='M23 18Q50 25 79 82M77 18Q50 25 21 82' fill='none' stroke='%23081120' stroke-width='11'/%3E%3C/svg%3E");
+  box-shadow: 0 0 7px #008cff88;
+}
+.custom .quadrant {
+  --p0: #193443; --p1: #193443; --p2: #193443; --p3: #193443;
+  position: absolute;
+  left: 45.8667%; top: 43.806%; width: 8.2667%; height: 1.251%;
+  background:
+    radial-gradient(circle, var(--p0) 0 38%, transparent 43%) 0 0 / 25% 100% no-repeat,
+    radial-gradient(circle, var(--p1) 0 38%, transparent 43%) 33.333% 0 / 25% 100% no-repeat,
+    radial-gradient(circle, var(--p2) 0 38%, transparent 43%) 66.667% 0 / 25% 100% no-repeat,
+    radial-gradient(circle, var(--p3) 0 38%, transparent 43%) 100% 0 / 25% 100% no-repeat;
+}
+.custom .quadrant.p0 { --p0: #69e7ff; }
+.custom .quadrant.p1 { --p1: #69e7ff; }
+.custom .quadrant.p2 { --p2: #69e7ff; }
+.custom .quadrant.p3 { --p3: #69e7ff; }
+
+/* View / Menu */
+.custom .arrows { left: 40.4667%; top: 42.46%; width: 19.0667%; height: 5.16%; }
+.custom .back, .custom .start {
+  top: 0; width: 23.077%; height: 100%;
+  border: 2px solid var(--junin-edge); border-radius: 50%;
+  background: var(--junin-surface); box-shadow: 0 0 4px #008cff66;
+}
+.custom .back { left: 0; }
+.custom .start { right: 0; }
+.custom .back::before, .custom .back::after {
+  content: ''; position: absolute; width: 35%; height: 30%;
+  border: 1.5px solid #bfeeff; background: #101b29;
+}
+.custom .back::before { left: 22%; top: 26%; }
+.custom .back::after { left: 38%; top: 41%; }
+.custom .start::before {
+  content: ''; position: absolute; inset: 28% 23%;
+  background: linear-gradient(#bfeeff 0 15%, transparent 15% 42%, #bfeeff 42% 57%, transparent 57% 85%, #bfeeff 85%);
+}
+
+/* ABXY
+   Os spans do viewer não contêm letras. Os quatro SVGs são backgrounds
+   incorporados, não arquivos externos; corpo, aro e estados são CSS. */
+.custom .abxy { left: 66.5333%; top: 33.465%; width: 20.4%; height: 24.395%; }
+.custom .button {
+  width: 35.294%; height: 34.615%;
+  border: 2px solid var(--junin-edge); border-radius: 50%;
+  background-color: #080e18;
+  box-shadow: inset 0 3px 5px #829caf33, inset 0 -3px 5px #000, 0 0 4px #008cff66;
+}
+.custom .button.a {
+  left: 35.9477%; top: 69.2308%; color: #54ff75;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='74' text-anchor='middle' font-family='Arial,sans-serif' font-size='68' font-weight='bold' fill='%2354ff75'%3EA%3C/text%3E%3C/svg%3E");
+}
+.custom .button.b {
+  right: 0; top: 37.1795%; color: #ff455b;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='74' text-anchor='middle' font-family='Arial,sans-serif' font-size='68' font-weight='bold' fill='%23ff455b'%3EB%3C/text%3E%3C/svg%3E");
+}
+.custom .button.x {
+  left: 2.6144%; top: 37.1795%; color: #69e7ff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='74' text-anchor='middle' font-family='Arial,sans-serif' font-size='68' font-weight='bold' fill='%2369e7ff'%3EX%3C/text%3E%3C/svg%3E");
+}
+.custom .button.y {
+  left: 35.9477%; top: 4.4872%; color: #ffdf51;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='74' text-anchor='middle' font-family='Arial,sans-serif' font-size='68' font-weight='bold' fill='%23ffdf51'%3EY%3C/text%3E%3C/svg%3E");
+}
+
+/* Analog Sticks
+   Eixos 0/1 = LS, 2/3 = RS. Botões 10/11 aplicam .pressed aos mesmos spans.
+   Margens e rotateX/rotateY são escritos pelo viewer; não sobrescrever. */
+.custom .sticks { left: 18.9333%; top: 40.19%; width: 51.8667%; height: 32.684%; }
+.custom .stick {
+  width: 21.337%; height: 39.713%;
+  border: 3px solid #008cff; border-radius: 50%;
+  background:
+    radial-gradient(circle at 43% 35%, #293440 0, #101722 55%, transparent 57%),
+    repeating-conic-gradient(#080d13 0 4deg, #33404c 4deg 6deg);
+  box-shadow: inset 0 0 0 5px #050b12, inset 0 -8px 7px #000, 0 3px 3px #000b, 0 0 7px #008cff99;
+}
+.custom .stick.left { left: 0; top: 0; }
+.custom .stick.right { left: 78.663%; top: 60.287%; }
+
+/* D-Pad
+   Quatro braços adjacentes e centro neutro; sem sobreposição dos inputs.
+   Diagonais são duas classes .pressed independentes. */
+.custom .dpad { left: 27.3333%; top: 57.706%; width: 16.2667%; height: 17.828%; }
+.custom .dpad::before {
+  content: ''; position: absolute; left: 34%; top: 34%; width: 32%; height: 32%;
+  background: #121d2a;
+}
+.custom .face { background: var(--junin-surface); border: 2px solid var(--junin-edge); }
+.custom .face.up { left: 34%; top: 0; width: 32%; height: 34%; border-bottom: 0; border-radius: 5px 5px 0 0; }
+.custom .face.down { left: 34%; bottom: 0; width: 32%; height: 34%; border-top: 0; border-radius: 0 0 5px 5px; }
+.custom .face.left { left: 0; top: 34%; width: 34%; height: 32%; border-right: 0; border-radius: 5px 0 0 5px; }
+.custom .face.right { right: 0; top: 34%; width: 34%; height: 32%; border-left: 0; border-radius: 0 5px 5px 0; }
+
+/* Pressed States
+   .pressed vem do viewer. Triggers continuam no fluxo analógico nativo.
+   Nenhum estado utiliza transform, scale, margens ou animação infinita. */
+.custom :is(.button, .bumper, .back, .start, .stick, .face, .meta) {
+  transition: filter 55ms linear;
+}
+.custom :is(.button, .bumper, .back, .start, .stick, .face, .meta).pressed {
+  border-color: var(--junin-cyan);
+  filter: brightness(1.5) drop-shadow(0 0 5px currentColor);
+}
+
+/* Final Adjustments
+   Escale o controle inteiro pelo parâmetro nativo sc; não reposicione inputs
+   por breakpoint. A PNG deve manter width/height na sua proporção original.
+   Se a CSP do destino bloquear data:image/svg+xml, será necessário hospedar
+   as imagens incorporadas e substituir os cinco URLs data: por URLs reais. */
+@media (prefers-reduced-motion: reduce) {
+  .custom :is(.button, .bumper, .back, .start, .stick, .face, .meta) { transition: none; }
+}
